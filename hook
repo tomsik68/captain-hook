@@ -42,12 +42,22 @@ function init {
 }
 
 function list {
+    if [ $# -ne 1 ]; then
+        echo "Need exactly one argument"
+        show_help
+        exit 1
+    fi
     type=$1
     root=`git_root`
     ls $root/.git/hooks/$type.d || echo "Nothing."
 }
 
 function add {
+    if [ $# -lt 2 ]; then
+        echo "Need at least 2 arguments"
+        show_help
+        exit 1
+    fi
     type=$1
     shift
     root=`git_root`
@@ -70,6 +80,11 @@ function add {
 }
 
 function remove {
+    if [ $# -lt 2 ]; then
+        echo "Need at least 2 arguments"
+        show_help
+        exit 1
+    fi
     type=$1
     shift
     root=`git_root`
