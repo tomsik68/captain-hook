@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # TODO: where hookrun is
-CPTHOOK_DIR=~/projects/captain-hook/
+CPTHOOK_DIR=~/captain-hook/
 
 # TODO: central collection of hooks
-HOOKS_DIR=~/dotfiles/git/hooks/
+HOOKS_DIR=~/captain-hook/hooks/
 
 function show_help {
     echo ""
