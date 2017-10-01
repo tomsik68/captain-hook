@@ -4,11 +4,11 @@ Captain Hook is a simple system to manage your git hooks.
 
 ## Concept
 
-The concept is, that you have a central collection of your git hooks stored in ~/git-hooks . 
-Rather than copying and/or manually combining these hooks, 
+The key concept is, that you have a central collection of your git hooks stored in ~/git-hooks . 
+Rather than copying and/or manually combining these hooks in each of your repositories,
 Captain Hook lets you symlink & combine your scripts to produce sensible git hooks.
 
-## How Captain Hook combines hooks
+### How Captain Hook combines hooks
 
 When git calls Captain Hook, it will search appropriate script directory(based on hook type) and try to execute every script forwarding all arguments from git. If any of the scripts fails, Captain Hook exits forwarding the return code of your script to git. Captain Hook only executes scripts up to the first script that fails.
 
