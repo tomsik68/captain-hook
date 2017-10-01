@@ -7,19 +7,16 @@ CPTHOOK_DIR=~/projects/captain-hook/
 HOOKS_DIR=~/dotfiles/git/hooks/
 
 function show_help {
-    echo "Captain Hook: Git hooks management system"
     echo ""
     echo "Usage: hook [command] [arguments]"
     echo ""
     echo "Commands & Arguments:"
     echo ""
     echo "  init - Initializes hook in current repository"
-    echo ""
     echo "  add [type] [scripts...] - Adds [scripts...] as hooks of type [type]"
-    echo ""
     echo "  rm [type] [scripts...] - Removes all mentions of every script of [scripts...] from type [type]"
-    echo ""
     echo "  ls [type] - Lists all scripts of type [type] in the current repository"
+    echo ""
 }
 
 function git_root {
@@ -123,6 +120,7 @@ case $cmd in
         list $@
         ;;
     *)
+        echo "Captain Hook: Git hooks management system"
         show_help
         ;;
 esac
