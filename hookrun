@@ -1,0 +1,9 @@
+#!/bin/bash
+
+type=$1
+shift
+for file in .git/hooks/$type.d/*; do
+    if [ -x $file ] && ! . $file $@; then
+        exit $?
+    fi
+done

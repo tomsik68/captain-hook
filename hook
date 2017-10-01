@@ -1,0 +1,113 @@
+#!/bin/bash
+
+# TODO: where hookrun is
+CPTHOOK_DIR=~/projects/captain-hook/
+
+# TODO: central collection of hooks
+HOOKS_DIR=~/dotfiles/git/hooks/
+
+function show_help {
+    echo "Captain Hook: Git hooks management system"
+    echo ""
+    echo "Usage: hook [command] [arguments]"
+    echo ""
+    echo "Commands & Arguments:"
+    echo ""
+    echo "  init - Initializes hook in current repository"
+    echo ""
+    echo "  add [type] [scripts...] - Adds [scripts...] as hooks of type [type]"
+    echo ""
+    echo "  rm [type] [scripts...] - Removes all mentions of every script of [scripts...] from type [type]"
+    echo ""
+    echo "  ls [type] - Lists all scripts of type [type] in the current repository"
+}
+
+function git_root {
+    git rev-parse --show-toplevel 
+}
+
+function hook_lookup {
+    name="$1"
+    find $HOOKS_DIR -name "*$name*" -type f -executable
+}
+
+function init {
+    root=`git_root`
+    echo "Initializing Captain Hook for: $root"
+    if [ -f "$root/.git/hooks/hookrun" ]; then
+        rm $root/.git/hooks/hookrun
+    fi
+    ln -s -t "$root/.git/hooks/" "$CPTHOOK_DIR/hookrun"
+    [ -x $root/cpthook ] && . $root/cpthook
+}
+
+function list {
+    type=$1
+    root=`git_root`
+    ls $root/.git/hooks/$type.d || echo "Nothing."
+}
+
+function add {
+    type=$1
+    shift
+    root=`git_root`
+    hookfile="$root/.git/hooks/$type"
+    [ -d "$hookfile.d" ] || mkdir "$hookfile.d"
+    if [ ! -f "$hookfile" ]; then
+        echo "#!/bin/bash" > "$hookfile"
+        echo "./.git/hooks/hookrun $type \$@" > "$hookfile"
+        chmod +x "$hookfile"
+    fi
+    while [ $# -gt 0 ]; do
+        lookup="$1"
+        selected=`hook_lookup "$lookup"`
+        for sel in $selected; do
+            ln -s -t "$root/.git/hooks/$type.d/" "$sel"
+            echo "add: $sel"
+        done
+        shift
+    done
+}
+
+function remove {
+    type=$1
+    shift
+    root=`git_root`
+    hookfile="$root/.git/hooks/$type"
+    [ -d "$hookfile.d" ] || mkdir "$hookfile.d"
+    if [ ! -f "$hookfile" ]; then
+        echo "#!/bin/bash" > "$hookfile"
+        echo "./.git/hooks/hookrun $type \$@" > "$hookfile"
+        chmod +x "$hookfile"
+    fi
+    while [ $# -gt 0 ]; do
+        lookup="$1"
+        selected=`hook_lookup "$lookup"`
+        for sel in $selected; do
+            rm "$root/.git/hooks/$type.d/`basename $sel`"
+            echo "rm: $sel"
+        done
+        shift
+    done
+}
+
+cmd=$1
+shift
+
+case $cmd in
+    init)
+        init
+        ;;
+    add)
+        add $@
+        ;;
+    rm)
+        remove $@
+        ;;
+    ls)
+        list $@
+        ;;
+    *)
+        show_help
+        ;;
+esac
